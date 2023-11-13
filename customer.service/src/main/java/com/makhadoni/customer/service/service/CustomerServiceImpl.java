@@ -2,10 +2,15 @@ package com.makhadoni.customer.service.service;
 
 import com.makhadoni.customer.service.cache.CacheService;
 import com.makhadoni.customer.service.dto.CustomerDto;
+import com.makhadoni.customer.service.exception.GeneralException;
+import com.makhadoni.customer.service.exception.NotFoundException;
+import com.makhadoni.customer.service.exception.UserAlreadyExistsException;
 import com.makhadoni.customer.service.mapper.CustomerMapper;
 import com.makhadoni.customer.service.repository.CustomerRepository;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,39 +29,37 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Cacheable(value = "customer")
     public Flux<CustomerDto> getCustomers() {
-       return customerRepository.findAll().map(CustomerMapper.MAPPER::customerToCustomerDto).defaultIfEmpty().doOnError();
+       return customerRepository.findAll().map(CustomerMapper.MAPPER::customerToCustomerDto);
     }
 
     @Override
-    public Mono<CustomerDto> createCustomer(CustomerDto customerDto) {
+    public Mono<CustomerDto> createOrUpdateCustomer(CustomerDto customerDto) {
         return customerRepository.save(mapper.customerDtoToCustomer(customerDto)).
-                map(savedCustomer -> mapper.customerToCustomerDto(savedCustomer)).doOnError();
+        onErrorResume(DuplicateKeyException.class, ex -> Mono.error(new UserAlreadyExistsException(ex.getCause().getMessage())))
+                .map(savedCustomer -> mapper.customerToCustomerDto(savedCustomer))
+                .onErrorResume(WebClientResponseException.InternalServerError.class, exception -> Mono.error(new GeneralException(exception.getMessage())));
     }
 
     @Override
     public Mono<CustomerDto> getCustomer(String customerId) {
        return cache.getValue(customerId).
                map(customer -> mapper.customerToCustomerDto(customer)).
-               switchIfEmpty(Mono.defer(() -> customerRepository.findById(Integer.parseInt(customerId)).
+               switchIfEmpty(Mono.defer(() -> customerRepository.findById(Integer.parseInt(customerId))
+                               .switchIfEmpty(Mono.error(new NotFoundException("user with id "+ customerId + " not found"))).
                        flatMap(customer -> cache.setValue(String.valueOf(customer.getId()), customer).
-                               map(isCached -> {
+                               handle((isCached, sink) -> {
            if (isCached){
-               return mapper.customerToCustomerDto(customer);
+               sink.next(mapper.customerToCustomerDto(customer));
            } else {
-               throw new RuntimeException("stuff");
+               sink.error(new GeneralException(""));
            }
-       })))).doOnError();
+       }))));
 
-    }
-
-    @Override
-    public Mono<CustomerDto> updateCustomer(CustomerDto customerDto) {
-        return customerRepository.save(mapper.customerDtoToCustomer(customerDto)).
-                map(updatedCustomer -> mapper.customerToCustomerDto(updatedCustomer)).defaultIfEmpty().doOnError();
     }
 
     @Override
     public Mono<Void> deleteCustomer(String customerId) {
-        return customerRepository.deleteById(Integer.parseInt(customerId)).defaultIfEmpty().doOnError();
+        return customerRepository.deleteById(Integer.parseInt(customerId))
+                . onErrorResume(Exception.class, ex -> Mono.error(new GeneralException(ex.getCause().getMessage())));
     }
 }

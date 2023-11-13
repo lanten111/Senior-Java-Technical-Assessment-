@@ -1,5 +1,6 @@
 package com.makhadoni.customer.service.router;
 
+import com.makhadoni.customer.service.handler.CustomerRouterHandler;
 import com.makhadoni.customer.service.service.CustomerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,11 +12,11 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class CustomerRouterConfig {
+public class CustomerRouter {
 
     private final CustomerService customerService;
 
-    public CustomerRouterConfig(CustomerService customerService) {
+    public CustomerRouter(CustomerService customerService) {
         this.customerService = customerService;
     }
 
@@ -25,9 +26,10 @@ public class CustomerRouterConfig {
                 RouterFunctions.nest(path("/api/customer"),
                         route(GET(""),handler::getCustomers)
                                 .andRoute(GET("/{id}"), handler::getCustomer)
-                                .andRoute(POST(""),handler::createCustomer)
-                                .andRoute(PATCH(""),handler::updateCustomer)
+                                .andRoute(POST(""),handler::createOrUpdateCustomer)
+                                .andRoute(PATCH(""),handler::createOrUpdateCustomer)
                                 .andRoute(DELETE("/{id}"), handler::deleteCustomer));
     }
 }
+
 

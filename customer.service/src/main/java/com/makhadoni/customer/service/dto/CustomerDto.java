@@ -1,12 +1,15 @@
 package com.makhadoni.customer.service.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 
 public class CustomerDto {
 
     private Integer id;
+    @NotNull(message = "Name cannot be null")
     private String firstName;
+
     private String lastName;
     private String email;
     private int age;

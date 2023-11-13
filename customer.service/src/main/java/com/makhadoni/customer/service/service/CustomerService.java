@@ -10,11 +10,10 @@ public interface CustomerService {
 
     Flux<CustomerDto> getCustomers();
 
-    Mono<CustomerDto> createCustomer(CustomerDto customerDto);
+    Mono<CustomerDto> createOrUpdateCustomer(CustomerDto customerDto);
 
     Mono<CustomerDto> getCustomer(String customerId);
 
-    Mono<CustomerDto> updateCustomer(CustomerDto customerDto);
 
     Mono<Void> deleteCustomer(String id);
 
