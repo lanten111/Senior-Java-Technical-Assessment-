@@ -23,13 +23,16 @@ public class RequestValidator implements Validator {
         CustomerDto customerDto = (CustomerDto) target;
         // Perform custom validation logic
         // Example: Check if the "name" property is empty
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "field.required." , "Name cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "field.required." , "firstName cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "field.required." , "lastName cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "field.required." , "email cannot be empty");
 
         if ((customerDto.getAge() < 0 || customerDto.getAge() > 120)) {
             errors.rejectValue("age", "field.invalid", "Age must be between 0 and 120");
         }
 
-        // You can add more validation rules as needed
+
+
     }
 
 

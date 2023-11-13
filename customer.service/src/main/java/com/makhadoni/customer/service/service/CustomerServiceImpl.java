@@ -2,9 +2,7 @@ package com.makhadoni.customer.service.service;
 
 import com.makhadoni.customer.service.cache.CacheService;
 import com.makhadoni.customer.service.dto.CustomerDto;
-import com.makhadoni.customer.service.exception.GeneralException;
-import com.makhadoni.customer.service.exception.NotFoundException;
-import com.makhadoni.customer.service.exception.UserAlreadyExistsException;
+import com.makhadoni.customer.service.exception.*;
 import com.makhadoni.customer.service.mapper.CustomerMapper;
 import com.makhadoni.customer.service.repository.CustomerRepository;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,9 +25,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Cacheable(value = "customer")
     public Flux<CustomerDto> getCustomers() {
-       return customerRepository.findAll().map(CustomerMapper.MAPPER::customerToCustomerDto);
+       return customerRepository.findAll().map(CustomerMapper.MAPPER::customerToCustomerDto)
+               .switchIfEmpty(Mono.error(new NotFoundException("No user found")))
+               .onErrorResume(Exception.class, exception -> Mono.error(new GeneralException(exception.getMessage())));
     }
 
     @Override
@@ -42,12 +41,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Mono<CustomerDto> getCustomer(String customerId) {
-       return cache.getValue(customerId).
-               map(customer -> mapper.customerToCustomerDto(customer)).
-               switchIfEmpty(Mono.defer(() -> customerRepository.findById(Integer.parseInt(customerId))
-                               .switchIfEmpty(Mono.error(new NotFoundException("user with id "+ customerId + " not found"))).
-                       flatMap(customer -> cache.setValue(String.valueOf(customer.getId()), customer).
-                               handle((isCached, sink) -> {
+       return cache.getValue(customerId)
+               .onErrorResume(NumberFormatException.class, ex -> Mono.error(new BadParameterException(ex.getMessage())))
+               .map(customer -> mapper.customerToCustomerDto(customer))
+               .switchIfEmpty(Mono.defer(() -> customerRepository.findById(Integer.parseInt(customerId))
+                       .switchIfEmpty(Mono.error(new NotFoundException("user with id "+ customerId + " not found")))
+                       .flatMap(customer -> cache.setValue(String.valueOf(customer.getId()), customer)
+                               .handle((isCached, sink) -> {
            if (isCached){
                sink.next(mapper.customerToCustomerDto(customer));
            } else {

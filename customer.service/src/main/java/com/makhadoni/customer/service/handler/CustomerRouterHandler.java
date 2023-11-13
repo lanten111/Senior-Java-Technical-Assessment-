@@ -1,6 +1,5 @@
 package com.makhadoni.customer.service.handler;
 
-import com.makhadoni.customer.service.domain.Customer;
 import com.makhadoni.customer.service.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.*;
 import com.makhadoni.customer.service.service.CustomerService;
@@ -8,7 +7,6 @@ import com.makhadoni.customer.service.validator.RequestValidator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -28,8 +26,9 @@ public class CustomerRouterHandler {
     public Mono<ServerResponse> createOrUpdateCustomer(ServerRequest request){
         return request.bodyToMono(CustomerDto.class)
                 .flatMap(this::validate)
+                .flatMap(customerDto -> customerService.createOrUpdateCustomer(customerDto))
                 .flatMap(savedCustomer -> ServerResponse.ok().body(BodyInserters.fromValue(savedCustomer)))
-                .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleContraintViolation)
+                .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
                 .onErrorResume(UserAlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)
                 .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
     }
@@ -38,6 +37,7 @@ public class CustomerRouterHandler {
         return customerService.getCustomer(request.pathVariable("id"))
                 .switchIfEmpty(Mono.error(new MissingParameterException("path variable id required")))
                 .flatMap(customer -> ServerResponse.ok().body(BodyInserters.fromValue(customer)))
+                .onErrorResume(BadParameterException.class, GlobalErrorHandler::handleBadParameter)
                 .onErrorResume(NotFoundException.class, GlobalErrorHandler::handleNotFoundException)
                 .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
     }

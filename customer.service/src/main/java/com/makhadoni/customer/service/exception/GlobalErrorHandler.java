@@ -3,6 +3,7 @@ package com.makhadoni.customer.service.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -24,14 +25,24 @@ public class GlobalErrorHandler {
     public static Mono<ServerResponse> handleAlreadyExistsException(UserAlreadyExistsException ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("status", HttpStatus.CONFLICT.value());
-        errorAttributes.put("error", "already exist");
-        errorAttributes.put("message", ex.getMessage());
+        errorAttributes.put("error", ex.getMessage() );
+        errorAttributes.put("message", "Already exist");
 
         return ServerResponse.status(HttpStatus.CONFLICT)
                 .bodyValue(errorAttributes);
     }
 
-    public static Mono<ServerResponse> handleContraintViolation(ConstraintViolationException ex) {
+    public static Mono<ServerResponse> handleBadParameter(BadParameterException ex) {
+        Map<String, Object> errorAttributes = new HashMap<>();
+        errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
+        errorAttributes.put("error", ex.getMessage() );
+        errorAttributes.put("message", "bad parameter format");
+
+        return ServerResponse.status(HttpStatus.CONFLICT)
+                .bodyValue(errorAttributes);
+    }
+
+    public static Mono<ServerResponse> handleConstraintViolation(ConstraintViolationException ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
         errorAttributes.put("error", ex.getErrors().stream()
@@ -45,11 +56,19 @@ public class GlobalErrorHandler {
 
     public static Mono<ServerResponse> handleGenericException(Exception ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
-        errorAttributes.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorAttributes.put("error", ex.getMessage());
-        errorAttributes.put("message", "something went wrong, we are working on it");
+        if (ex instanceof ServerWebInputException){
+            errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
+            errorAttributes.put("error",  ex.getMessage());
+            errorAttributes.put("message", "Bad request body");
+            return ServerResponse.status(HttpStatus.BAD_REQUEST)
+                    .bodyValue(errorAttributes);
+        } else {
+            errorAttributes.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            errorAttributes.put("error", ex.getMessage());
+            errorAttributes.put("message", "something went wrong, we are working on it");
+            return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .bodyValue(errorAttributes);
+        }
 
-        return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .bodyValue(errorAttributes);
     }
 }
