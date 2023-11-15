@@ -1,7 +1,9 @@
 server:
   port: 8080
-  servlet:
-    context-path: /api/customer/
+springdoc:
+  api-docs:
+    groups:
+      enabled=true:
 spring:
   r2dbc:
     url:  r2dbc:postgresql://localhost:5432/postgres

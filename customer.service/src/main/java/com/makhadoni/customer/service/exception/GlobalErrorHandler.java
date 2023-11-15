@@ -22,7 +22,7 @@ public class GlobalErrorHandler {
                 .bodyValue(errorAttributes);
     }
 
-    public static Mono<ServerResponse> handleAlreadyExistsException(UserAlreadyExistsException ex) {
+    public static Mono<ServerResponse> handleAlreadyExistsException(CustomerAlreadyExistsException ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("status", HttpStatus.CONFLICT.value());
         errorAttributes.put("error", ex.getMessage() );
@@ -32,13 +32,13 @@ public class GlobalErrorHandler {
                 .bodyValue(errorAttributes);
     }
 
-    public static Mono<ServerResponse> handleBadParameter(BadParameterException ex) {
+    public static Mono<ServerResponse> handleInvalidArgumentException(InvalidArgumentException ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
         errorAttributes.put("error", ex.getMessage() );
         errorAttributes.put("message", "bad parameter format");
 
-        return ServerResponse.status(HttpStatus.CONFLICT)
+        return ServerResponse.status(HttpStatus.BAD_REQUEST)
                 .bodyValue(errorAttributes);
     }
 

@@ -6,14 +6,16 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 public interface CustomerService {
 
-    Flux<CustomerDto> getCustomers();
+    Flux<CustomerDto> getCustomers(int page, int size, String firstName);
 
-    Mono<CustomerDto> createOrUpdateCustomer(CustomerDto customerDto);
+    Mono<CustomerDto> createCustomer(CustomerDto customerDto);
+
+    Mono<CustomerDto> updateCustomer(CustomerDto customerDto);
 
     Mono<CustomerDto> getCustomer(String customerId);
-
 
     Mono<Void> deleteCustomer(String id);
 
