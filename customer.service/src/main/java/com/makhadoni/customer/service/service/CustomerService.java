@@ -1,8 +1,6 @@
 package com.makhadoni.customer.service.service;
 
-import com.makhadoni.customer.service.domain.Customer;
 import com.makhadoni.customer.service.dto.CustomerDto;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -17,6 +15,6 @@ public interface CustomerService {
 
     Mono<CustomerDto> getCustomer(String customerId);
 
-    Mono<Void> deleteCustomer(String id);
+    Mono<Void> deleteCustomer(int id);
 
 }

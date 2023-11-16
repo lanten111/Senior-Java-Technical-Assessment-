@@ -32,11 +32,11 @@ public class GlobalErrorHandler {
                 .bodyValue(errorAttributes);
     }
 
-    public static Mono<ServerResponse> handleInvalidArgumentException(InvalidArgumentException ex) {
+    public static Mono<ServerResponse> handleInvalidArgumentException(IllegalArgumentException ex) {
         Map<String, Object> errorAttributes = new HashMap<>();
         errorAttributes.put("status", HttpStatus.BAD_REQUEST.value());
         errorAttributes.put("error", ex.getMessage() );
-        errorAttributes.put("message", "bad parameter format");
+        errorAttributes.put("message", "Bad parameter value");
 
         return ServerResponse.status(HttpStatus.BAD_REQUEST)
                 .bodyValue(errorAttributes);

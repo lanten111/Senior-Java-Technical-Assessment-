@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -25,11 +26,17 @@ public class CacheService {
     public Flux<CustomerDto> getList(String key){
         return redisTemplate.opsForList().range(key, 0, -1);
     }
-    public Mono<Boolean> setValue(String key, CustomerDto customerDto){
-        return redisTemplate.opsForValue().set(key, customerDto);
+
+    public Mono<Boolean> setValue(String key, CustomerDto customerDto, Duration timeout){
+        return redisTemplate.opsForValue().set(key, customerDto, timeout);
     }
-    public Mono<Long> setList(String key, List<CustomerDto> customerDtos){
+
+    public Mono<Long> setList(String key, List<CustomerDto> customerDtos, Duration timeout){
         return redisTemplate.opsForList().rightPushAll(key, customerDtos);
+    }
+
+    public Mono<Long> evictAll(){
+        return redisTemplate.delete(redisTemplate.keys("*"));
     }
 
 
