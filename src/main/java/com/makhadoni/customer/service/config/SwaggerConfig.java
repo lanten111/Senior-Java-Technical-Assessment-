@@ -28,7 +28,6 @@ public class SwaggerConfig {
                             schema(new StringSchema().example("token")).required(true));
                     operation.addParametersItem(new Parameter().name("userId").in("header").
                             schema(new StringSchema().example("test")).required(true));
-
                 });
     }
 

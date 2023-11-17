@@ -1,9 +1,10 @@
 server:
   port: 8080
 springdoc:
+  show-actuator: true
   api-docs:
     groups:
-      enabled=true:
+      enabled: true
 spring:
   r2dbc:
     url:  r2dbc:postgresql://localhost:5432/postgres
