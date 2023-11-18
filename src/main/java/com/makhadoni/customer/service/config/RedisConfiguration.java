@@ -1,6 +1,6 @@
 package com.makhadoni.customer.service.config;
 
-import com.makhadoni.customer.service.dto.CustomerDto;
+import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;

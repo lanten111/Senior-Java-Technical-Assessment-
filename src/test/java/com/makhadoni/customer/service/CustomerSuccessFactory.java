@@ -1,7 +1,7 @@
 package com.makhadoni.customer.service;
 
-import com.makhadoni.customer.service.domain.Customer;
-import com.makhadoni.customer.service.dto.CustomerDto;
+import com.makhadoni.customer.service.modules.customer.domain.Customer;
+import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 
 public class CustomerSuccessFactory {
 

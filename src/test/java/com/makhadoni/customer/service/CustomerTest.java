@@ -1,13 +1,11 @@
 package com.makhadoni.customer.service;
 
 import com.makhadoni.customer.service.cache.CacheService;
-import com.makhadoni.customer.service.domain.Customer;
-import com.makhadoni.customer.service.dto.CustomerDto;
-import com.makhadoni.customer.service.exception.CustomerAlreadyExistsException;
+import com.makhadoni.customer.service.modules.customer.domain.Customer;
+import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.NotFoundException;
-import com.makhadoni.customer.service.mapper.CustomerMapper;
-import com.makhadoni.customer.service.repository.CustomerRepository;
-import com.makhadoni.customer.service.service.CustomerServiceImpl;
+import com.makhadoni.customer.service.modules.customer.repository.CustomerRepository;
+import com.makhadoni.customer.service.modules.customer.service.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

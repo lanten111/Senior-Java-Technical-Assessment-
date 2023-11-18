@@ -1,7 +1,6 @@
 package com.makhadoni.customer.service.cache;
 
-import com.makhadoni.customer.service.domain.Customer;
-import com.makhadoni.customer.service.dto.CustomerDto;
+import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

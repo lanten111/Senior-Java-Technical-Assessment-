@@ -6,6 +6,11 @@ springdoc:
     groups:
       enabled: true
 spring:
+  security:
+    token:
+      expiresInMinutes: 1
+      issuer: GK
+      secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:
     url:  r2dbc:postgresql://localhost:5432/postgres
     username: postgres

@@ -1,5 +1,11 @@
 databaseChangeLog:
   - include:
-      file: classpath:/db/changelog/changes/001-initial-schema.sql
+      file: classpath:/db/changelog/changes/001-initial-customer-schema.sql
   - include:
-      file: classpath:/db/changelog/changes/002-add-test_data.sql
+      file: classpath:/db/changelog/changes/002-initial-user-schema.sql
+  - include:
+      file: classpath:/db/changelog/changes/003-add-customer_data.sql
+  - include:
+      file: classpath:/db/changelog/changes/004-add-user_data.sql
+
+
