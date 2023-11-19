@@ -29,9 +29,9 @@ public class CustomerTest  {
     @InjectMocks
     CustomerServiceImpl customerService;
 
-    private final CustomerDto customerDto = CustomerSuccessFactory.getCustomerDto();
+    private final CustomerDto customerDto = TestSuccessFactory.getCustomerDto();
 
-    private final Customer customer = CustomerSuccessFactory.getCustomer();
+    private final Customer customer = TestSuccessFactory.getCustomer();
 
     @BeforeEach
     public void setup(){
@@ -86,17 +86,6 @@ public class CustomerTest  {
                                 customerDto.getId() == customer.getId()
                 ).verifyComplete();
     }
-
-//    @Test
-//    public void canThrowAlreadyExistException(){
-//
-//        Mockito.when(customerRepository.save(customer)).thenReturn(Mono.just(customer));
-//        Mockito.when(customerRepository.save(customer)).thenReturn(Mono.just(customer));
-//
-//        StepVerifier.create(customerService.createCustomer(customerDto))
-//                .expectError(CustomerAlreadyExistsException.class)
-//                .verify();
-//    }
 
     @Test
     public void canSuccessfullyGetCustomer(){

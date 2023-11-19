@@ -8,22 +8,22 @@ springdoc:
 spring:
   security:
     token:
-      expiresInMinutes: 20
+      expiresInMinutes: 5
       issuer: GK
       secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:
-    url:  r2dbc:postgresql://localhost:5432/postgres
+    url:  r2dbc:postgresql://db:5432/postgres
     username: postgres
     password: postgres
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yaml
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://db:5432/postgres
     user: postgres
     password: postgres
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
 logging:
   level:
-    root: DEBUG
+    root: INFO

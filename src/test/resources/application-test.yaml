@@ -8,7 +8,7 @@ springdoc:
 spring:
   security:
     token:
-      expiresInMinutes: 20
+      expiresInMinutes: 1
       issuer: GK
       secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:

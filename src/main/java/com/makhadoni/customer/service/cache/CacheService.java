@@ -34,6 +34,10 @@ public class CacheService {
         return redisTemplate.opsForList().rightPushAll(key, customerDtos);
     }
 
+    public Mono<Long> evictByKey(String key){
+        return redisTemplate.delete(redisTemplate.keys(key));
+    }
+
     public Mono<Long> evictAll(){
         return redisTemplate.delete(redisTemplate.keys("*"));
     }
