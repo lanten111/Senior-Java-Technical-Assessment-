@@ -1,6 +1,5 @@
 package com.makhadoni.customer.service.exception;
 
-import com.makhadoni.customer.service.modules.customer.service.CustomerServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -75,8 +74,6 @@ public class GlobalErrorHandler {
         return ServerResponse.status(HttpStatus.UNAUTHORIZED)
                 .bodyValue(errorAttributes);
     }
-
-
 
     public static Mono<ServerResponse> handleGenericException(Exception ex) {
         Map<String, Object> errorAttributes = new HashMap<>();

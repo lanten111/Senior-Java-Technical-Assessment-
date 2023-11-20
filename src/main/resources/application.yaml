@@ -5,6 +5,8 @@ springdoc:
   api-docs:
     groups:
       enabled: true
+    enabled: true
+    path: /swagger-doc/v3/api-docs
 spring:
   security:
     token:

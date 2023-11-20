@@ -107,8 +107,8 @@ public class CustomerRouter {
                 RouterFunctions.nest(path("/api/customer"),
                         route(GET(""),handler::getCustomers)
                                 .andRoute(GET("/{customerId}"), handler::getCustomer)
-                                .andRoute(POST(""),handler::createCustomer)
-                                .andRoute(PATCH(""),handler::updateCustomer)
+                                .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)),handler::createCustomer)
+                                .andRoute(PATCH("").and(accept(MediaType.APPLICATION_JSON)),handler::updateCustomer)
                                 .andRoute(DELETE("/{customerId}"), handler::deleteCustomer));
     }
 }

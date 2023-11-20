@@ -5,7 +5,10 @@ springdoc:
   api-docs:
     groups:
       enabled: true
-spring:
+  swagger-ui:
+    csrf:
+      enabled: false
+    enabled: true
   security:
     token:
       expiresInMinutes: 1

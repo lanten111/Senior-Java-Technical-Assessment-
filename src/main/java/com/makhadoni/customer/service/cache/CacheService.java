@@ -2,6 +2,7 @@ package com.makhadoni.customer.service.cache;
 
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -9,7 +10,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;
 
-@Service
+@Component
 public class CacheService {
 
     private final ReactiveRedisTemplate<String, CustomerDto> redisTemplate;

@@ -4,7 +4,7 @@ services:
     image: customer-service-api-image:latest
     container_name: customer-service
     ports:
-      - "808:8080"
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:

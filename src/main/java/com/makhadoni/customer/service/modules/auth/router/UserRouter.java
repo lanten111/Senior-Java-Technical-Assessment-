@@ -24,19 +24,19 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class UserRouter {
 
     @Bean
-    @RouterOperations(
-            {
-                    @RouterOperation(path = "/api/customer/{customerId}", produces = {
-                            MediaType.APPLICATION_JSON_VALUE},
-                            method = RequestMethod.DELETE, beanClass = CustomerService.class, beanMethod = "deleteCustomer",
-                            operation = @Operation(operationId = "deleteCustomer",
-                                    responses = {
-                                            @ApiResponse(responseCode = "204", description = "successful operation", content = @Content(mediaType = "Boolean")),
-                                            @ApiResponse(responseCode = "400", description = "Bad parameter input"),},
-                                    parameters = {
-                                            @Parameter(in = ParameterIn.PATH, name = "customerId")}
-                            )),
-            })
+//    @RouterOperations(
+//            {
+//                    @RouterOperation(path = "/api/customer/{customerId}", produces = {
+//                            MediaType.APPLICATION_JSON_VALUE},
+//                            method = RequestMethod.DELETE, beanClass = CustomerService.class, beanMethod = "deleteCustomer",
+//                            operation = @Operation(operationId = "deleteCustomer",
+//                                    responses = {
+//                                            @ApiResponse(responseCode = "204", description = "successful operation", content = @Content(mediaType = "Boolean")),
+//                                            @ApiResponse(responseCode = "400", description = "Bad parameter input"),},
+//                                    parameters = {
+//                                            @Parameter(in = ParameterIn.PATH, name = "customerId")}
+//                            )),
+//            })
     public RouterFunction<ServerResponse> userRoute(UserHandler handler) {
         return
                 RouterFunctions.nest(path("/api"),

@@ -7,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import javax.security.sasl.AuthenticationException;
 import java.util.List;
 import java.util.stream.Collectors;
 

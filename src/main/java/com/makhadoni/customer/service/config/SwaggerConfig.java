@@ -1,34 +1,32 @@
-package com.makhadoni.customer.service.config;
-
-import io.swagger.v3.oas.models.media.StringSchema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import org.springdoc.core.GroupedOpenApi;
-import org.springdoc.core.customizers.OpenApiCustomiser;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class SwaggerConfig {
-
-    @Bean
-    public GroupedOpenApi CustomerGroupApi() {
-        return GroupedOpenApi.builder()
-                .group("Customer")
-                .pathsToMatch("/swagger-demo/customer/**")
-                .addOpenApiCustomiser(getOpenApiCustomiser())
-                .build();
-    }
-
-    public OpenApiCustomiser getOpenApiCustomiser() {
-
-        return openAPI -> openAPI.getPaths().values().stream().flatMap(pathItem ->
-                        pathItem.readOperations().stream())
-                .forEach(operation -> {
-                    operation.addParametersItem(new Parameter().name("Authorization").in("header").
-                            schema(new StringSchema().example("token")).required(true));
-                    operation.addParametersItem(new Parameter().name("userId").in("header").
-                            schema(new StringSchema().example("test")).required(true));
-                });
-    }
-
-}
+//package com.makhadoni.customer.service.config;
+//
+//import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Configuration;
+//import springfox.documentation.builders.PathSelectors;
+//import springfox.documentation.builders.RequestHandlerSelectors;
+//import springfox.documentation.spi.DocumentationType;
+//import springfox.documentation.spring.web.plugins.Docket;
+//import springfox.documentation.swagger.web.UiConfiguration;
+//import springfox.documentation.swagger.web.UiConfigurationBuilder;
+//import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
+//
+//@Configuration
+//@EnableSwagger2WebFlux
+//public class SwaggerConfig {
+//
+//    @Bean
+//    public Docket api() {
+//        return new Docket(DocumentationType.SWAGGER_2)
+//                .select()
+//                .apis(RequestHandlerSelectors.basePackage("com.makhadoni.customer.service.modules.customer.router.CustomerRouter"))
+//                .paths(PathSelectors.any())
+//                .build();
+//    }
+//
+//    @Bean
+//    public UiConfiguration uiConfig() {
+//        return UiConfigurationBuilder.builder()
+//                .build();
+//    }
+//
+//}
