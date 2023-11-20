@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class SecurityContextRepository implements ServerSecurityContextRepository {
 
-    private JwtAuthenticationManager jwtAuthenticationManager;
+    private final JwtAuthenticationManager jwtAuthenticationManager;
 
     public SecurityContextRepository(JwtAuthenticationManager jwtAuthenticationManager) {
         this.jwtAuthenticationManager = jwtAuthenticationManager;

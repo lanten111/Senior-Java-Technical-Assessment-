@@ -25,18 +25,17 @@ public class CustomerHandler {
 
     private final CustomerValidator validator;
 
-    private final ParameterValidator parameterValidator;
+    private static final String CUSTOMER_ID = "customerId";
 
     public CustomerHandler(CustomerService customerService, CustomerValidator validator) {
         this.customerService = customerService;
         this.validator = validator;
-        this.parameterValidator = new ParameterValidator();
     }
 
     public Mono<ServerResponse> createCustomer(ServerRequest request){
         return request.bodyToMono(CustomerDto.class)
                 .flatMap(this::validateCustomerObject)
-                .flatMap(customerDto -> customerService.createCustomer(customerDto))
+                .flatMap(customerService::createCustomer)
                 .flatMap(savedCustomer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(savedCustomer)))
                 .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
                 .onErrorResume(AlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)
@@ -47,7 +46,7 @@ public class CustomerHandler {
     public Mono<ServerResponse> updateCustomer(ServerRequest request){
         return request.bodyToMono(CustomerDto.class)
                 .flatMap(this::validateCustomerObject)
-                .flatMap(customerDto -> customerService.updateCustomer(customerDto))
+                .flatMap(customerService::updateCustomer)
                 .flatMap(savedCustomer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(savedCustomer)))
                 .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
                 .onErrorResume(AlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)
@@ -56,8 +55,8 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> getCustomer(ServerRequest request){
-        return parameterValidator.getAndValidatePathParam(request, "customerId")
-                .flatMap( id -> customerService.getCustomer(request.pathVariable("customerId"))
+        return ParameterValidator.getAndValidatePathParam(request, CUSTOMER_ID)
+                .flatMap( id -> customerService.getCustomer(request.pathVariable(CUSTOMER_ID))
                         .flatMap(customer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(customer))))
                 .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
                 .onErrorResume(NotFoundException.class, GlobalErrorHandler::handleNotFoundException)
@@ -65,8 +64,8 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> getCustomers(ServerRequest request){
-        return parameterValidator.getAndValidateQueryParam(request, "page", 0)
-                .flatMap(page -> parameterValidator.getAndValidateQueryParam(request, "size", 100)
+        return ParameterValidator.getAndValidateQueryParam(request, "page", 0)
+                .flatMap(page -> ParameterValidator.getAndValidateQueryParam(request, "size", 100)
                         .flatMap(size -> customerService.getCustomers(page, size, request.queryParam("firstName").orElse(""))
                 .collectList()
                 .flatMap(customers -> ServerResponse.ok().contentType(APPLICATION_JSON).body(Mono.just(customers), List.class))))
@@ -77,7 +76,7 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> deleteCustomer(ServerRequest request){
-        return parameterValidator.getAndValidatePathParam(request, "customerId")
+        return ParameterValidator.getAndValidatePathParam(request, CUSTOMER_ID)
                 .flatMap(id -> customerService.deleteCustomer(id)
                         .then(ServerResponse.noContent().build()))
                 .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
@@ -86,7 +85,7 @@ public class CustomerHandler {
     }
 
     private Mono<CustomerDto> validateCustomerObject(CustomerDto customerDto){
-        Errors errors = new BeanPropertyBindingResult(customerDto, "CustomerDto");
+        Errors errors = new BeanPropertyBindingResult(customerDto, customerDto.getClass().getName());
         validator.validate(customerDto, errors);
 
         if (errors.hasErrors()) {

@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository repository;
 
-    private final UserMapper mapper = UserMapper.MAPPER;
+    private static final UserMapper mapper = UserMapper.MAPPER;
 
     private static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
 
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Mono<UserDto> getUser(String username){
-        return repository.findByUsername(username).map( user -> mapper.mapTo(user));
+        return repository.findByUsername(username).map(mapper::mapTo);
     }
 
     @Override

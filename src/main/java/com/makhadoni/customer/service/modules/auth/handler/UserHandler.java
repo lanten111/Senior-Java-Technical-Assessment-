@@ -33,6 +33,8 @@ public class UserHandler {
 
     private static final Logger logger = Logger.getLogger(UserHandler.class.getName());
 
+    public static final String UNOTHORIXED_MESSAGE = "Invalid login details supplied, please try again or register if you don't have an account";
+
     public UserHandler(UserServiceImpl service, UserValidator validator,
                        PasswordEncoder passwordEncoder, TokenService TokenService) {
         this.service = service;
@@ -49,7 +51,7 @@ public class UserHandler {
                 .flatMap(userDetails -> ServerResponse.ok().contentType(APPLICATION_JSON)
                         .body(BodyInserters.fromValue(tokenService.getToken(userDetails.getUsername())))
                         .doOnNext(r -> logger.log(Level.INFO, "user: "+userDetails.getUsername()+ "just logged in")))
-                .switchIfEmpty(Mono.error(new AuthenticationException("Unauthorized access")))
+                .switchIfEmpty(Mono.error(new AuthenticationException(UNOTHORIXED_MESSAGE)))
                 .onErrorResume(AuthenticationException.class, GlobalErrorHandler::handleAuthenticationException)
                 .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
                 .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
@@ -64,7 +66,7 @@ public class UserHandler {
                     userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
                     return userDto;
                 })
-                .flatMap(userDto -> service.createUser(userDto))
+                .flatMap(service::createUser)
                 .flatMap(savedCustomer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(savedCustomer)))
                 .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
                 .onErrorResume(AlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
-    private final CustomerMapper mapper = CustomerMapper.MAPPER;
+    private static final CustomerMapper mapper = CustomerMapper.MAPPER;
     private final CacheService cache;
 
     private static final Logger logger = Logger.getLogger(CustomerServiceImpl.class.getName());
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         return cache.getList(createPageableCustomerKey(page, size, firstName))
                 .switchIfEmpty(Flux.defer(() -> repository.findAllByFirstNameContainingIgnoreCaseOrderById(firstName, pageable)
                         .switchIfEmpty(Flux.error(new NotFoundException("No customers found")))
-                        .map(customers -> mapper.mapTo(customers))
+                        .map(mapper::mapTo)
                         .collectList()
                         .doOnNext(r -> logger.log(Level.INFO, "Deleted customer with id: "+ firstName))
                         .doOnNext(customerDtos -> cache.setList
@@ -52,7 +52,7 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.save(mapper.mapFrom(customerDto))
                 .onErrorResume(DuplicateKeyException.class, ex -> Mono
                         .error(new AlreadyExistsException("Customer with email: "+ customerDto.getEmail() + " already exist")))
-                .map(savedCustomer -> mapper.mapTo(savedCustomer));
+                .map(mapper::mapTo);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
                            return Mono.error(new NotFoundException("Customer with id "+ customerId + " does not exist"));
                        }))
                        .doOnNext(customer -> logger.log(Level.INFO, "getting customer with id"+ customerId))
-                       .map(customer -> mapper.mapTo(customer))
+                       .map(mapper::mapTo)
                        .doOnNext(customerDto -> cache.setValue(customerId,customerDto, Duration.ofHours(3)).subscribe())));
     }
 

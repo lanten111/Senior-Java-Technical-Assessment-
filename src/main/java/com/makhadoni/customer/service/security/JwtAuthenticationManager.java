@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
 
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
     public JwtAuthenticationManager(TokenService tokenService) {
         this.tokenService = tokenService;

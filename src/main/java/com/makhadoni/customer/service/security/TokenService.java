@@ -54,10 +54,10 @@ public class TokenService {
     public Mono<Boolean> valid(String token){
         try {
             Claims claims = getClaims(token);
+            return Mono.just(claims.getExpiration().after(new Date()));
         }catch (ExpiredJwtException e){
             return Mono.just(false);
         }
-        return Mono.just(true);
     }
 
     public List<String> getRoles(String token){

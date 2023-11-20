@@ -3,10 +3,14 @@ server:
 springdoc:
   show-actuator: true
   api-docs:
+    swagger-ui:
+      enabled: true
+      path: /swagger-ui.html
     groups:
       enabled: true
     enabled: true
     path: /swagger-doc/v3/api-docs
+
 spring:
   security:
     token:

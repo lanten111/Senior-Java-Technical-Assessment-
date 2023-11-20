@@ -14,9 +14,9 @@ import org.springframework.security.web.server.csrf.CookieServerCsrfTokenReposit
 @Configuration
 public class WebSecurityConfig {
 
-    private ReactiveAuthenticationManager authenticationManager;
+    private final ReactiveAuthenticationManager authenticationManager;
 
-    private SecurityContextRepository contextRepository;
+    private final SecurityContextRepository contextRepository;
 
     public WebSecurityConfig(ReactiveAuthenticationManager authenticationManager, SecurityContextRepository contextRepository) {
         this.authenticationManager = authenticationManager;
@@ -28,12 +28,12 @@ public class WebSecurityConfig {
         http
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(contextRepository)
-                .cors(corsSpec -> corsSpec.disable())
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(authorizeExchangeSpec ->  authorizeExchangeSpec
-                        .pathMatchers("api/login", "api/signup", "/swagger-ui/index.html", "/swagger-doc/v3/api-docs").permitAll()
+                        .pathMatchers("api/auth/login", "api/auth/signup", "/swagger-ui/index.html", "/swagger-doc/v3/api-docs").permitAll()
                         .anyExchange()
                         .authenticated())
-                .formLogin(formLoginSpec -> formLoginSpec.disable())
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .csrf(csrfSpec ->
                         csrfSpec.csrfTokenRepository(CookieServerCsrfTokenRepository.withHttpOnlyFalse()).disable()
                 );

@@ -2,7 +2,6 @@ package com.makhadoni.customer.service.modules.auth.dto;
 
 import lombok.Data;
 
-@Data
 public class UserDto {
 
     private String username;
