@@ -3,7 +3,6 @@ package com.makhadoni.customer.service.exception;
 import org.springframework.validation.ObjectError;
 
 import java.util.List;
-import java.util.Set;
 
 public class ConstraintViolationException extends RuntimeException{
 

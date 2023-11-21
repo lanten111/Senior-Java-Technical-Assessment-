@@ -19,10 +19,11 @@ public class CustomerValidator implements Validator {
     public void validate(Object target, Errors errors)  {
 
         CustomerDto customerDto = (CustomerDto) target;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "field.required." , "firstName cannot be empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "field.required." , "lastName cannot be empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "field.required." , "email cannot be empty");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "age", "field.required." , "age cannot be empty");
+        String errorCode = "field.required.";
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", errorCode, "firstName cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", errorCode, "lastName cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", errorCode, "email cannot be empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "age", errorCode, "age cannot be empty");
         if ((customerDto.getAge() < 10 || customerDto.getAge() > 120)) {
             errors.rejectValue("age", "field.invalid", "Age must be between 10 and 120");
         }

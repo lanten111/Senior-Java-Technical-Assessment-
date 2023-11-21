@@ -1,6 +1,5 @@
 package com.makhadoni.customer.service.modules.auth.service;
 
-import com.makhadoni.customer.service.cache.CustomerCacheService;
 import com.makhadoni.customer.service.cache.UserCacheService;
 import com.makhadoni.customer.service.exception.AlreadyExistsException;
 import com.makhadoni.customer.service.modules.auth.Repository.UserRepository;
@@ -33,15 +32,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Mono<UserDto> getUser(String username){
-        return cache.getValue(username)
-                .doOnNext(r -> logger.log(Level.INFO, "getting user with username: "+ username))
-                .switchIfEmpty(Mono.defer(() -> repository.findByUsername(username)
-                        .doOnNext(user -> logger.log(Level.INFO,"User not found in cache. Fallback to repository. Username: {}", username))
+    public Mono<UserDto> getUser(String name){
+        return cache.getValue(name)
+                .doOnNext(r -> logger.info( "getting user with username: "+ name))
+                .switchIfEmpty(Mono.defer(() -> repository.findByUsername(name)
+                        .doOnNext(user -> logger.log(Level.INFO,"User not found in cache. Fallback to repository. Username: {}", name))
                         .map(mapper::mapTo)
                         .doOnNext(userDto -> {
-                            cache.setValue(username, userDto, Duration.ofHours(userCacheTimeout)).subscribe();
-                            logger.log(Level.INFO, "Cached user for username: " + username);
+                            cache.setValue(name, userDto, Duration.ofHours(userCacheTimeout)).subscribe();
+                            logger.info( "Cached user for username: " + name);
                         })
                 ));
 
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Mono<String> createUser(UserDto userDto) {
-        return repository.save(mapper.MapFrom(userDto))
+        return repository.save(mapper.mapFrom(userDto))
                 .flatMap(user -> Mono.just("User with username "+user.getUsername()+ " has successfully been created"))
                 .doOnNext(r -> logger.log(Level.INFO, "Created new customer with username: "+userDto.getUsername()))
                 .onErrorResume(DuplicateKeyException.class, ex -> {

@@ -1,8 +1,6 @@
 server:
   port: 8080
 springdoc:
-  show-actuator: true
-  version: '@springdoc.version@'
   swagger-ui:
     enabled: true
     path: /swagger-ui/index.html
@@ -11,7 +9,6 @@ springdoc:
     path: /swagger-doc/v3/api-docs
   cache:
     disabled: true
-  show-login-endpoint: true
 spring:
   security:
     token:
@@ -20,13 +17,13 @@ spring:
       secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:
     url:  r2dbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
+    username: admin
+    password: admin
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yaml
     url: jdbc:postgresql://localhost:5432/postgres
-    user: postgres
-    password: postgres
+    user: admin
+    password: admin
   data:
     redis:
       host: localhost

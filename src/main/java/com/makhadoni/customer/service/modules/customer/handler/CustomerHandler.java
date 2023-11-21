@@ -1,5 +1,6 @@
 package com.makhadoni.customer.service.modules.customer.handler;
 
+import com.makhadoni.customer.service.exception.handler.GlobalExceptionHandler;
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.*;
 import com.makhadoni.customer.service.modules.customer.service.CustomerService;

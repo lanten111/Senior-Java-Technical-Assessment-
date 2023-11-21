@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
@@ -43,13 +42,13 @@ public class CustomerServiceImpl implements CustomerService {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         return cache.getList(createPageableCustomerKey(page, size, firstName))
                 .switchIfEmpty((Flux.defer(() -> repository.findAllByFirstNameContainingIgnoreCaseOrderById(firstName, pageable)
-                        .doOnNext(user -> logger.log(Level.INFO,"customer list with page "+page+" size "+size+" and first name filter of "+firstName + " not found fallback to repository"))
+                        .doOnNext(user -> logger.info("customer list with page "+page+" size "+size+" and first name filter of "+firstName + " not found fallback to repository"))
                         .map(mapper::mapTo)
                         .collectList()
                         .doOnNext(customerDtos -> {
                             cache.setList
                                     (createPageableCustomerKey(page, size, firstName), customerDtos, Duration.ofHours(customerListCacheTimeout)).subscribe();
-                            logger.log(Level.INFO, "Cached customer list for page "+page+ " size "+size+ " with first name: "+firstName);
+                            logger.info("Cached customer list for page "+page+ " size "+size+ " with first name: "+firstName);
                         })
                         .flatMapMany(Flux::fromIterable))
                 ))
@@ -79,11 +78,11 @@ public class CustomerServiceImpl implements CustomerService {
     public Mono<CustomerDto> getCustomer(String customerId) {
        return cache.getValue(customerId)
                .switchIfEmpty(Mono.defer(() -> repository.findById(Integer.parseInt(customerId))
-                       .doOnNext(user -> logger.log(Level.INFO,"customer not found in cache. Fallback to repository. Username: "+customerId))
+                       .doOnNext(user -> logger.info("customer not found in cache. Fallback to repository. Username: "+customerId))
                        .map(mapper::mapTo)
                        .doOnNext(customerDto -> {
                            cache.setValue(customerId, customerDto, Duration.ofHours(Long.parseLong(customerCacheTimeout))).subscribe();
-                           logger.log(Level.INFO, "Cached user for userId: " + customerDto);
+                           logger.info("Cached user for userId: " + customerDto);
                        })
                ))
                .switchIfEmpty(Mono.defer(() -> {
@@ -96,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Mono<Void> deleteCustomer(int customerId) {
         return repository.deleteById(customerId)
-                .doOnNext(r -> logger.log(Level.WARNING, "Deleted customer with id: "+ customerId))
+                .doOnNext(r -> logger.warning("Deleted customer with id: "+ customerId))
                 .doOnNext(t -> cache.evictAll());
     }
 

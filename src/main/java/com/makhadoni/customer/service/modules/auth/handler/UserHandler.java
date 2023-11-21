@@ -3,7 +3,7 @@ package com.makhadoni.customer.service.modules.auth.handler;
 import com.makhadoni.customer.service.exception.AlreadyExistsException;
 import com.makhadoni.customer.service.exception.AuthenticationException;
 import com.makhadoni.customer.service.exception.ConstraintViolationException;
-import com.makhadoni.customer.service.exception.GlobalExceptionHandler;
+import com.makhadoni.customer.service.exception.handler.GlobalExceptionHandler;
 import com.makhadoni.customer.service.modules.auth.dto.UserDto;
 import com.makhadoni.customer.service.security.TokenService;
 import com.makhadoni.customer.service.modules.auth.service.UserServiceImpl;
@@ -36,11 +36,11 @@ public class UserHandler {
     public static final String UNAUTHORISED_MESSAGE = "Invalid login details supplied, please try again or register if you don't have an account";
 
     public UserHandler(UserServiceImpl service, UserValidator validator,
-                       PasswordEncoder passwordEncoder, TokenService TokenService) {
+                       PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.service = service;
         this.validator = validator;
         this.passwordEncoder = passwordEncoder;
-        this.tokenService = TokenService;
+        this.tokenService = tokenService;
     }
 
     public Mono<ServerResponse> signIn(ServerRequest request){
@@ -50,7 +50,7 @@ public class UserHandler {
                         .filter(foundUser -> passwordEncoder.matches(suppliedUser.getPassword(), foundUser.getPassword())))
                 .flatMap(userDetails -> ServerResponse.ok().contentType(APPLICATION_JSON)
                         .body(BodyInserters.fromValue(tokenService.getToken(userDetails.getUsername())))
-                        .doOnNext(r -> logger.log(Level.INFO, "user: "+userDetails.getUsername()+ "just logged in")))
+                        .doOnNext(r -> logger.info("user: "+userDetails.getUsername()+ "just logged in")))
                 .switchIfEmpty(Mono.error(new AuthenticationException(UNAUTHORISED_MESSAGE)))
                 .onErrorResume(AuthenticationException.class, GlobalExceptionHandler::handleAuthenticationException)
                 .onErrorResume(ConstraintViolationException.class, GlobalExceptionHandler::handleConstraintViolation)

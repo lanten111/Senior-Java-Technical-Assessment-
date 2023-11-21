@@ -1,13 +1,20 @@
 package com.makhadoni.customer.service.modules.customer.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.io.Serializable;
 
 public class CustomerDto implements Serializable {
 
+    @Schema(description = "customer id", example = "1")
     private Integer id;
+    @Schema(description = "customer first name", example = "bruce")
     private String firstName;
+    @Schema(description = "customer last name", example = "wayne")
     private String lastName;
+    @Schema(description = "customer email", example = "bruce@wayneenterprise.batman")
     private String email;
+    @Schema(description = "customers age", example = "44")
     private int age;
 
     public Integer getId() {

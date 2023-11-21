@@ -11,5 +11,5 @@ public interface UserMapper {
     UserMapper MAPPER = Mappers.getMapper(UserMapper.class);
 
     UserDto mapTo(User user);
-    User MapFrom(UserDto userDto);
+    User mapFrom(UserDto userDto);
 }

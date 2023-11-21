@@ -1,5 +1,9 @@
-package com.makhadoni.customer.service.exception;
+package com.makhadoni.customer.service.exception.handler;
 
+import com.makhadoni.customer.service.exception.AlreadyExistsException;
+import com.makhadoni.customer.service.exception.AuthenticationException;
+import com.makhadoni.customer.service.exception.ConstraintViolationException;
+import com.makhadoni.customer.service.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -16,8 +20,8 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class.getName());
 
-    private static final String CODE = "code";
-    private static final String MESSAGE = "message";
+    public static final String CODE = "code";
+    public static final String MESSAGE = "message";
 
     public static Mono<ServerResponse> handleNotFoundException(NotFoundException ex) {
 
@@ -26,8 +30,7 @@ public class GlobalExceptionHandler {
         errorAttributes.put(CODE, HttpStatus.NOT_FOUND.value());
         errorAttributes.put(MESSAGE, ex.getMessage());
         logger.warning("NotFoundException Error occurred :" + ex.getMessage());
-        return ServerResponse.status(HttpStatus.NOT_FOUND)
-                .bodyValue(errorAttributes);
+        return ServerResponse.status(HttpStatus.NOT_FOUND).bodyValue(errorAttributes);
     }
 
     public static Mono<ServerResponse> handleAlreadyExistsException(AlreadyExistsException ex) {
@@ -35,8 +38,7 @@ public class GlobalExceptionHandler {
         errorAttributes.put(CODE, HttpStatus.CONFLICT.value());
         errorAttributes.put(MESSAGE, ex.getMessage() );
         logger.warning("AlreadyExistsException Error occurred :" + ex.getMessage());
-        return ServerResponse.status(HttpStatus.CONFLICT)
-                .bodyValue(errorAttributes);
+        return ServerResponse.status(HttpStatus.CONFLICT).bodyValue(errorAttributes);
     }
 
     public static Mono<ServerResponse> handleInvalidArgumentException(IllegalArgumentException ex) {
@@ -44,8 +46,7 @@ public class GlobalExceptionHandler {
         errorAttributes.put(CODE, HttpStatus.BAD_REQUEST.value());
         errorAttributes.put(MESSAGE, "IllegalArgumentExceptionBad parameter value supplied, please try again");
         logger.warning("IllegalArgumentException Error occurred :" + ex.getMessage());
-        return ServerResponse.status(HttpStatus.BAD_REQUEST)
-                .bodyValue(errorAttributes);
+        return ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(errorAttributes);
     }
 
     public static Mono<ServerResponse> handleConstraintViolation(ConstraintViolationException ex) {
@@ -55,8 +56,7 @@ public class GlobalExceptionHandler {
                 .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.joining(",")));
         logger.warning("ConstraintViolationException Error occurred :" + ex.getMessage());
-        return ServerResponse.status(HttpStatus.BAD_REQUEST)
-                .bodyValue(errorAttributes);
+        return ServerResponse.status(HttpStatus.BAD_REQUEST).bodyValue(errorAttributes);
     }
 
     public static Mono<ServerResponse> handleAuthenticationException(AuthenticationException ex) {
@@ -64,8 +64,7 @@ public class GlobalExceptionHandler {
         errorAttributes.put(CODE, HttpStatus.UNAUTHORIZED.value());
         errorAttributes.put(MESSAGE, ex.getMessage());
         logger.warning("AuthenticationException Error occurred :" + ex.getMessage());
-        return ServerResponse.status(HttpStatus.UNAUTHORIZED)
-                .bodyValue(errorAttributes);
+        return ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValue(errorAttributes);
     }
 
     public static Mono<ServerResponse> handleGenericException(Exception ex) {

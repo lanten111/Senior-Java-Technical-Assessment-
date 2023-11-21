@@ -21,7 +21,7 @@ public class TokenService {
     @Value("${spring.security.token.secret:IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30}")
     private  String secret;
 
-    @Value("${spring.security.token.issuer:MM}")
+    @Value("${spring.security.token.issuer:GK}")
     private String issuer;
 
     @Value("${spring.security.token.expiresInMinutes:5}")
@@ -49,7 +49,8 @@ public class TokenService {
     }
 
     public String getUsernameFromToken(String token){
-        return getClaims(token).getSubject();    }
+        return getClaims(token).getSubject();
+    }
 
     public Mono<Boolean> valid(String token){
         try {

@@ -17,9 +17,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.Objects;
+
 import static org.mockito.ArgumentMatchers.*;
 
-public class CustomerTest  {
+class CustomerTest  {
 
     @Mock
     CustomerRepository customerRepository;
@@ -41,7 +43,7 @@ public class CustomerTest  {
     }
 
     @Test
-    public void canSuccessfullyGetCustomers(){
+    void canSuccessfullyGetCustomers(){
 
         Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.empty());
         Mockito.when(customerRepository.findAllByFirstNameContainingIgnoreCaseOrderById(anyString(), any())).thenReturn(Flux.just(customer));
@@ -53,14 +55,14 @@ public class CustomerTest  {
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                customerDto.getLastName() == customer.getLastName() &&
-                                customerDto.getId() == customer.getId()
+                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
+                                Objects.equals(customerDto.getId(), customer.getId())
                 ).verifyComplete();
     }
 
 
     @Test
-    public void canSuccessfullyGetCustomersFromCache(){
+    void canSuccessfullyGetCustomersFromCache(){
 
         Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.just(customerDto));
 
@@ -69,13 +71,13 @@ public class CustomerTest  {
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                customerDto.getLastName() == customer.getLastName() &&
-                                customerDto.getId() == customer.getId()
+                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
+                                Objects.equals(customerDto.getId(), customer.getId())
                 ).verifyComplete();
     }
 
     @Test
-    public void CanCreateOrUpdateCustomer(){
+    void CanCreateOrUpdateCustomer(){
 
         Mockito.when(customerRepository.save(any())).thenReturn(Mono.just(customer));
 
@@ -84,13 +86,13 @@ public class CustomerTest  {
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                customerDto.getLastName() == customer.getLastName() &&
-                                customerDto.getId() == customer.getId()
+                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
+                                Objects.equals(customerDto.getId(), customer.getId())
                 ).verifyComplete();
     }
 
     @Test
-    public void canSuccessfullyGetCustomer(){
+    void canSuccessfullyGetCustomer(){
 
         Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
         Mockito.when(customerRepository.findById(anyInt())).thenReturn(Mono.just(customer));
@@ -102,13 +104,13 @@ public class CustomerTest  {
                     customerDto.getFirstName().equals(customer.getFirstName()) &&
                             customerDto.getEmail().equals(customer.getEmail()) &&
                             customerDto.getAge() == customer.getAge() &&
-                            customerDto.getLastName() == customer.getLastName() &&
-                            customerDto.getId() == customer.getId()
+                            Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
+                            Objects.equals(customerDto.getId(), customer.getId())
                 ).verifyComplete();
     }
 
     @Test
-    public void canSuccessfullyGetCustomerFromCache(){
+    void canSuccessfullyGetCustomerFromCache(){
 
 
         Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.just(customerDto));
@@ -118,13 +120,13 @@ public class CustomerTest  {
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                customerDto.getLastName() == customer.getLastName() &&
-                                customerDto.getId() == customer.getId()
+                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
+                                Objects.equals(customerDto.getId(), customer.getId())
                 ).verifyComplete();
     }
 
     @Test
-    public void canThrowNotFoundException(){
+    void canThrowNotFoundException(){
 
         Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
         Mockito.when(customerRepository.findById(anyInt())).thenReturn(Mono.empty());
@@ -135,7 +137,7 @@ public class CustomerTest  {
     }
 
     @Test
-    public void canSuccessfullyDeleteCustomer(){
+    void canSuccessfullyDeleteCustomer(){
 
         Mockito.when(customerRepository.deleteById(anyInt())).thenReturn(Mono.empty());
 

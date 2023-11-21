@@ -1,6 +1,7 @@
-package com.makhadoni.customer.service.exception;
+package com.makhadoni.customer.service.exception.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.makhadoni.customer.service.exception.AuthenticationException;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 @Component
 public class AuthExceptionHandler implements ErrorWebExceptionHandler {
 
-    private static final Logger logger = Logger.getLogger(GlobalExceptionHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(ErrorWebExceptionHandler.class.getName());
 
     private final ObjectMapper objectMapper;
 
@@ -32,16 +33,16 @@ public class AuthExceptionHandler implements ErrorWebExceptionHandler {
         Map<String, String> appError = new HashMap<>();
 
         if (ex instanceof AuthenticationException) {
-            appError.put("code", String.valueOf(HttpStatus.UNAUTHORIZED.value()));
-            appError.put("message", ex.getMessage());
+            appError.put(GlobalExceptionHandler.CODE, String.valueOf(HttpStatus.UNAUTHORIZED.value()));
+            appError.put(GlobalExceptionHandler.MESSAGE, ex.getMessage());
             logger.severe("AuthenticationException Error occurred :" + ex.getMessage());
         } else if (ex instanceof SignatureException) {
-            appError.put("code", String.valueOf(HttpStatus.UNAUTHORIZED.value()));
-            appError.put("message", "Invalid token supplied, Please try again");
+            appError.put(GlobalExceptionHandler.CODE, String.valueOf(HttpStatus.UNAUTHORIZED.value()));
+            appError.put(GlobalExceptionHandler.MESSAGE, "Invalid or Missing token provided, please try again");
             logger.severe("AuthenticationException Error occurred :" + ex.getMessage());
         } else {
-            appError.put("code", String.valueOf(HttpStatus.UNAUTHORIZED.value()));
-            appError.put("message", "Authentication failed");
+            appError.put(GlobalExceptionHandler.CODE, String.valueOf(HttpStatus.UNAUTHORIZED.value()));
+            appError.put(GlobalExceptionHandler.MESSAGE, "Authentication failed");
             logger.severe("Unknown Error occurred :" + ex.getMessage());
         }
 
