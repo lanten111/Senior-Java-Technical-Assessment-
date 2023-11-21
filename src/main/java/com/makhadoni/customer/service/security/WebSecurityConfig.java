@@ -30,7 +30,7 @@ public class WebSecurityConfig {
                 .securityContextRepository(contextRepository)
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(authorizeExchangeSpec ->  authorizeExchangeSpec
-                        .pathMatchers("/api/auth/*","/swagger-ui/**").permitAll()
+                        .pathMatchers("/auth/*","/swagger-ui/**").permitAll()
                         .pathMatchers( "/swagger-doc/**").permitAll()
                         .anyExchange()
                         .authenticated())

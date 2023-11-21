@@ -38,8 +38,10 @@ public class CustomerCacheService {
         return redisTemplate.delete(redisTemplate.keys(key));
     }
 
-    public Mono<Long> evictAll(){
-        return redisTemplate.delete(redisTemplate.keys("*"));
+    public Mono<Void> evictAll(){
+        return redisTemplate.keys("*")
+                .flatMap(this::evictByKey)
+                .then();
     }
 
 

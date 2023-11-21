@@ -24,6 +24,7 @@ public class TestSuccessFactory {
         customerDto.setFirstName("lewis");
         customerDto.setAge(44);
         customerDto.setEmail("lewis@mercedes.com");
+        customerDto.setId(1);
         return customerDto;
     }
 

@@ -136,22 +136,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.3.4.RELEASE</version>
-				<configuration>
-					<jvmArguments>-Dspring.application.admin.enabled=true</jvmArguments>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>start</goal>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>

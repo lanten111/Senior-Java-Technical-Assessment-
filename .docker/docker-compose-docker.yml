@@ -1,0 +1,26 @@
+version: '3.4'
+services:
+  customer_service_application:
+    image: customer-service-api-image:latest
+    container_name: customer-service
+    ports:
+      - "8071:8071"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:latest
+    container_name: db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+  redis:
+    image: redis
+    container_name: redis
+volumes:
+  postgres_db:

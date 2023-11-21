@@ -1,6 +1,7 @@
 package com.makhadoni.customer.service.modules.customer.service;
 
 import com.makhadoni.customer.service.cache.CustomerCacheService;
+import com.makhadoni.customer.service.encryption.EncryptionService;
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.*;
 import com.makhadoni.customer.service.modules.customer.mapper.CustomerMapper;
@@ -22,6 +23,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository repository;
     private static final CustomerMapper mapper = CustomerMapper.MAPPER;
     private final CustomerCacheService cache;
+    private final EncryptionService encryptionService;
 
     private static final Logger logger = Logger.getLogger(CustomerServiceImpl.class.getName());
 
@@ -32,9 +34,10 @@ public class CustomerServiceImpl implements CustomerService {
     private String customerCacheTimeout;
 
     @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerCacheService cache) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerCacheService cache, EncryptionService encryptionService) {
         this.repository = customerRepository;
         this.cache = cache;
+        this.encryptionService = encryptionService;
     }
 
     @Override
@@ -52,16 +55,29 @@ public class CustomerServiceImpl implements CustomerService {
                         })
                         .flatMapMany(Flux::fromIterable))
                 ))
+                .map(dto -> {
+                    dto.setEmail(encryptionService.decrypt(dto.getEmail()));
+                    return dto;
+                })
                 .switchIfEmpty(Flux.error(new NotFoundException("No customers found")))
                 .doOnComplete(() -> logger.info("get customers Processing complete with  page "+ page  +" and size "+ size + " and name filter of "+firstName));
     }
 
 
     public Mono<CustomerDto> createOrUpdateCustomer(CustomerDto customerDto) {
+        customerDto.setEmail(encryptionService.encrypt(customerDto.getEmail()));
         return repository.save(mapper.mapFrom(customerDto))
                 .onErrorResume(DuplicateKeyException.class, ex -> Mono
-                        .error(new AlreadyExistsException("Customer with email: "+ customerDto.getEmail() + " already exist")))
-                .map(mapper::mapTo);
+                        .error(new AlreadyExistsException("Customer with email: "+ encryptionService.decrypt(customerDto.getEmail()) + " already exist")))
+                .map(mapper::mapTo)
+                .doOnNext(dto -> {
+                    cache.setValue(String.valueOf(dto.getId()), dto, Duration.ofHours(Long.parseLong(customerCacheTimeout))).subscribe();
+                    logger.info("Cached user for userId: " + customerDto);
+                })
+                .map(dto -> {
+                    dto.setEmail(encryptionService.decrypt(dto.getEmail()));
+                    return dto;
+                });
     }
 
     @Override
@@ -88,15 +104,18 @@ public class CustomerServiceImpl implements CustomerService {
                .switchIfEmpty(Mono.defer(() -> {
                    logger.warning("Customer with id "+ customerId + " is not found");
                    return Mono.error(new NotFoundException("Customer with id "+ customerId + " does not exist"));
-               }));
+               })).map(dto -> {
+                   dto.setEmail(encryptionService.decrypt(dto.getEmail()));
+                   return dto;
+               });
 
     }
 
     @Override
     public Mono<Void> deleteCustomer(int customerId) {
         return repository.deleteById(customerId)
-                .doOnNext(r -> logger.warning("Deleted customer with id: "+ customerId))
-                .doOnNext(t -> cache.evictAll());
+                .doOnNext(t -> cache.evictAll().subscribe())
+                .doOnNext(r -> logger.warning("Deleted customer with id: "+ customerId));
     }
 
     private String createPageableCustomerKey(int page, int size, String firstName){

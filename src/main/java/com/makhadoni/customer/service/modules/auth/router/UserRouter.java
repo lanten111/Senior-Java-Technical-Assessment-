@@ -2,7 +2,6 @@ package com.makhadoni.customer.service.modules.auth.router;
 
 import com.makhadoni.customer.service.exception.dto.ErrorDto;
 import com.makhadoni.customer.service.modules.auth.dto.UserDto;
-import com.makhadoni.customer.service.modules.auth.service.UserServiceImpl;
 import com.makhadoni.customer.service.modules.auth.handler.UserHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,14 +27,14 @@ public class UserRouter {
     @Bean
     @RouterOperations(
             {
-                    @RouterOperation(path = "/api/auth/signup", produces = {MediaType.APPLICATION_JSON_VALUE},method = RequestMethod.PUT,
+                    @RouterOperation(path = "/auth/signup", produces = {MediaType.APPLICATION_JSON_VALUE},method = RequestMethod.PUT,
                             operation = @Operation(operationId = "signup",  tags = { "user auth"}, responses = {
                                     @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = String.class))),
                                     @ApiResponse(responseCode = "400", description = "When bad payload/params supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                                     @ApiResponse(responseCode = "409", description = "when supplied data already exist", content = @Content(schema = @Schema(implementation = ErrorDto.class))),},
                                     requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = UserDto.class)))
                             )),
-                    @RouterOperation(path = "/api/auth/login", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST,
+                    @RouterOperation(path = "/auth/login", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST,
                             operation = @Operation(operationId = "login", tags = { "user auth"}, responses = {
                                     @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = UserDto.class))),
                                     @ApiResponse(responseCode = "400", description = "When bad request supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -45,7 +44,7 @@ public class UserRouter {
             })
     public RouterFunction<ServerResponse> userRoute(UserHandler handler) {
         return
-                RouterFunctions.nest(path("/api/auth"),
+                RouterFunctions.nest(path("/auth"),
                         route(POST("/login").and(accept(MediaType.APPLICATION_JSON)),handler::signIn)
                         .andRoute(PUT("/signup").and(accept(MediaType.APPLICATION_JSON)), handler::createUser));
     }

@@ -10,20 +10,26 @@ springdoc:
   cache:
     disabled: true
 spring:
+  webflux:
+    base-path: /customer-service/v1/api
   security:
+    encryption:
+      initVector: 1234567812345678
+      key: 1234567812345678
+      algo: AES/CBC/PKCS5PADDING
     token:
-      expiresInMinutes: 20
+      expiresInMinutes: 10
       issuer: GK
       secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:
     url:  r2dbc:postgresql://localhost:5432/postgres
-    username: admin
-    password: admin
+    username: postgres
+    password: postgres
   liquibase:
     change-log: classpath:db/changelog/changelog-master.yaml
     url: jdbc:postgresql://localhost:5432/postgres
-    user: admin
-    password: admin
+    user: postgres
+    password: postgres
   data:
     redis:
       host: localhost
@@ -35,4 +41,4 @@ spring:
 
 logging:
   level:
-    root: debug
+    root: info

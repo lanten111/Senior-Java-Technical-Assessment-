@@ -1,14 +1,24 @@
 server:
   port: 8071
 springdoc:
-  show-actuator: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
   api-docs:
-    groups:
-      enabled: true
+    enabled: true
+    path: /swagger-doc/v3/api-docs
+  cache:
+    disabled: true
 spring:
+  webflux:
+    base-path: /customer-service/v1/api
   security:
+    encryption:
+      initVector: 1234567812345678
+      key: 1234567812345678
+      algo: AES/CBC/PKCS5PADDING
     token:
-      expiresInMinutes: 5
+      expiresInMinutes: 10
       issuer: GK
       secret: IS5IobIItq0pRX9JL9TvdQ40Oa93u2Wojlign4V3L30
   r2dbc:
@@ -24,6 +34,11 @@ spring:
     redis:
       host: redis
       port: 6379
+    timeouts:
+      customer-list: 5
+      customer: 6
+      user: 3
+
 logging:
   level:
-    root: INFO
+    root: info

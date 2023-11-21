@@ -34,7 +34,7 @@ public class CustomerRouter {
     @Bean
     @RouterOperations(
             {
-                    @RouterOperation(path = "/api/customer/all", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.GET,
+                    @RouterOperation(path = "/customer/all", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.GET,
                             operation = @Operation(operationId = "getCustomers", tags = { "customer service"}, security = @SecurityRequirement(name = "Authorization") , responses = {
                                         @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CustomerDto.class))),
                                         @ApiResponse(responseCode = "400", description = "When bad payload/params supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -45,7 +45,7 @@ public class CustomerRouter {
                                         @Parameter(in = ParameterIn.QUERY, name = "size", schema = @Schema(type = "int", nullable = true)),
                                         @Parameter(in = ParameterIn.QUERY, name = "firstName", schema = @Schema(type = "string", nullable = true))})
                     ),
-                    @RouterOperation(path = "/api/customer/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.GET,
+                    @RouterOperation(path = "/customer/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.GET,
                             operation = @Operation(operationId = "getCustomer", tags = { "customer service"}, security = @SecurityRequirement(name = "Authorization"), responses = {
                                     @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CustomerDto.class))),
                                     @ApiResponse(responseCode = "400", description = "When bad payload/params supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -53,7 +53,7 @@ public class CustomerRouter {
                                     @ApiResponse(responseCode = "404", description = "when no data found", content = @Content(schema = @Schema(implementation = ErrorDto.class)))},
                                     parameters = {@Parameter(in = ParameterIn.PATH, name = "customerId", required = true , schema = @Schema(type = "int"))})),
 
-                    @RouterOperation(path = "/api/customer", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST,
+                    @RouterOperation(path = "/customer", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.POST,
                             operation = @Operation(operationId = "createCustomer", tags = { "customer service"},security = @SecurityRequirement(name = "Authorization"), responses = {
                                     @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CustomerDto.class))),
                                     @ApiResponse(responseCode = "400", description = "When bad payload/params supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -61,14 +61,14 @@ public class CustomerRouter {
                                     @ApiResponse(responseCode = "409", description = "when supplied data already exist", content = @Content(schema = @Schema(implementation = ErrorDto.class))),},
                                     requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CustomerDto.class))))),
 
-                    @RouterOperation(path = "/api/customer", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.PATCH,
+                    @RouterOperation(path = "/customer", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.PATCH,
                             operation = @Operation(operationId = "UpdateCustomer", tags = { "customer service"}, security = @SecurityRequirement(name = "Authorization"), responses = {
                                     @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = CustomerDto.class))),
                                     @ApiResponse(responseCode = "401", description = "When token for auth is missing or invalid", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
                                     @ApiResponse(responseCode = "409", description = "when supplied data already exist", content = @Content(schema = @Schema(implementation = CustomerDto.class)))},
                                     requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CustomerDto.class))))),
 
-                    @RouterOperation(path = "/api/customer/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.DELETE,
+                    @RouterOperation(path = "/customer/{customerId}", produces = {MediaType.APPLICATION_JSON_VALUE}, method = RequestMethod.DELETE,
                             operation = @Operation(operationId = "deleteCustomer", tags = { "customer service"}, security = @SecurityRequirement(name = "Authorization"),responses = {
                                     @ApiResponse(responseCode = "204", description = "successful operation", content = @Content(mediaType = "no content")),
                                     @ApiResponse(responseCode = "400", description = "When bad payload/params supplied", content = @Content(schema = @Schema(implementation = ErrorDto.class))),
@@ -78,7 +78,7 @@ public class CustomerRouter {
             })
     public RouterFunction<ServerResponse> customerRoute(CustomerHandler handler) {
         return
-                RouterFunctions.nest(path("/api/customer"),
+                RouterFunctions.nest(path("/customer"),
                         route(GET("/all"),handler::getCustomers)
                                 .andRoute(GET("/{customerId}"), handler::getCustomer)
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)),handler::createCustomer)

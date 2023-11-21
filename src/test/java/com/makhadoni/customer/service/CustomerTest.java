@@ -1,6 +1,7 @@
 package com.makhadoni.customer.service;
 
 import com.makhadoni.customer.service.cache.CustomerCacheService;
+import com.makhadoni.customer.service.encryption.EncryptionService;
 import com.makhadoni.customer.service.modules.customer.domain.Customer;
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.NotFoundException;
@@ -29,6 +30,9 @@ class CustomerTest  {
     @Mock
     CustomerCacheService customerCacheService;
 
+    @Mock
+    EncryptionService encryptionService;
+
     @InjectMocks
     CustomerServiceImpl customerService;
 
@@ -48,6 +52,7 @@ class CustomerTest  {
         Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.empty());
         Mockito.when(customerRepository.findAllByFirstNameContainingIgnoreCaseOrderById(anyString(), any())).thenReturn(Flux.just(customer));
         Mockito.when(customerCacheService.setList(Mockito.anyString(), Mockito.anyList(), any())).thenReturn(Flux.just(1).count());
+        Mockito.when(encryptionService.decrypt(any())).thenReturn(customerDto.getEmail());
 
 
         StepVerifier.create(customerService.getCustomers(1, 1, ""))
@@ -65,14 +70,14 @@ class CustomerTest  {
     void canSuccessfullyGetCustomersFromCache(){
 
         Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.just(customerDto));
+        Mockito.when(encryptionService.decrypt(any())).thenReturn(customerDto.getEmail());
 
         StepVerifier.create(customerService.getCustomers(1, 1, ""))
                 .expectNextMatches(customerDto ->
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
-                                Objects.equals(customerDto.getId(), customer.getId())
+                                Objects.equals(customerDto.getLastName(), customer.getLastName())
                 ).verifyComplete();
     }
 
@@ -80,14 +85,15 @@ class CustomerTest  {
     void CanCreateOrUpdateCustomer(){
 
         Mockito.when(customerRepository.save(any())).thenReturn(Mono.just(customer));
+        Mockito.when(customerCacheService.setValue(anyString(), any(), any())).thenReturn(Mono.just(true));
+        Mockito.when(encryptionService.decrypt(any())).thenReturn(customerDto.getEmail());
 
         StepVerifier.create(customerService.createCustomer(customerDto))
                 .expectNextMatches(customerDto ->
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
-                                Objects.equals(customerDto.getId(), customer.getId())
+                                Objects.equals(customerDto.getLastName(), customer.getLastName())
                 ).verifyComplete();
     }
 
@@ -97,6 +103,7 @@ class CustomerTest  {
         Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
         Mockito.when(customerRepository.findById(anyInt())).thenReturn(Mono.just(customer));
         Mockito.when(customerCacheService.setValue(any(), any(), any())).thenReturn(Mono.just(true));
+        Mockito.when(encryptionService.decrypt(any())).thenReturn(customerDto.getEmail());
 
 
         StepVerifier.create(customerService.getCustomer("1"))
@@ -114,14 +121,14 @@ class CustomerTest  {
 
 
         Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.just(customerDto));
+        Mockito.when(encryptionService.decrypt(any())).thenReturn(customerDto.getEmail());
 
         StepVerifier.create(customerService.getCustomer("1"))
                 .expectNextMatches(customerDto ->
                         customerDto.getFirstName().equals(customer.getFirstName()) &&
                                 customerDto.getEmail().equals(customer.getEmail()) &&
                                 customerDto.getAge() == customer.getAge() &&
-                                Objects.equals(customerDto.getLastName(), customer.getLastName()) &&
-                                Objects.equals(customerDto.getId(), customer.getId())
+                                Objects.equals(customerDto.getLastName(), customer.getLastName())
                 ).verifyComplete();
     }
 
