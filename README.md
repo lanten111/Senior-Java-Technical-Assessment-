@@ -38,7 +38,7 @@ Swagger for api documentation and endpoints test
 # Deploying the app
 in order do deploy the app follow the below steps
 
-## Properrties files
+## Properties files
 
 there are two docker compose files
 docker-compose and docker-compose-docker
