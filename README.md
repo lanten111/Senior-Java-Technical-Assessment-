@@ -51,22 +51,40 @@ docker build -t customer-service-api-image:latest .
 ````
 
 Intellij might allow you to run it directly from here, if you see double play button on the left just press it,
-else you can copy the command to application root directory
+else you can copy the command to terminal on application root directory
 
-Docker build will take a little while..
+Docker start build the image .. might take a little while
 
-The build will build the image, pull all dependency and run unit tests, when all is successful, 
-you can now run docker compose with below command
+The build will build the image, pull all dependency and run unit tests.
 
+## Spinning up containers
+when the build is done you can now run docker compose with below command
 this will start up the database, redis and then the application itself
-
-when it's done then you can access the api via swagger or use postman collection below
-
 
 ```bash
 docker-compose -f .docker/docker-compose.yml up -d
 ```
 
-To build the Docker image for this project, run the following command in your terminal:
+## Accessing the service
+
+### swagger
+Once all service are up and running you can access swagger on the following endpoint
+
+http://localhost:8080/swagger-ui/index.html
+
+First thing would to register using any username or password.. or keep the pre-populated detaols
+
+once's successfully registered, then you can login using the login endpoint and same username and password used in registration
+
+Once's that is successful, then you can copy the token from the response and pastes on authorize value top right
+
+once that done then you will be able to access all customer service endpoints.. unto the token expire
+
+### Postman
+Alternatively the api can used used via postman, just import the below postman collection and environment into your own postman
+
+[Collection](.postman/Assesment.postman_collection.json)
+
+[Environment](.postman/Assesment.postman_environment.json)
 
 
