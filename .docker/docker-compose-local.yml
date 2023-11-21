@@ -1,6 +1,6 @@
 version: '3.4'
 services:
-  db:
+  db1:
     image: postgres:latest
     container_name: Postgres_local
     restart: always
@@ -11,7 +11,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres_db:/var/lib/postgresql/data
-  redis:
+  redis1:
     image: redis
     container_name: redis-local
     ports:

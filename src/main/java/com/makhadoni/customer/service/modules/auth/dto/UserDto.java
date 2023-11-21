@@ -1,8 +1,9 @@
 package com.makhadoni.customer.service.modules.auth.dto;
 
-import lombok.Data;
 
-public class UserDto {
+import java.io.Serializable;
+
+public class UserDto implements Serializable {
 
     private String username;
     private String password;

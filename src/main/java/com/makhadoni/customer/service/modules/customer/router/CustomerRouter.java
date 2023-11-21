@@ -1,5 +1,8 @@
 package com.makhadoni.customer.service.modules.customer.router;
 
+import com.makhadoni.customer.service.modules.auth.dto.UserDto;
+import com.makhadoni.customer.service.modules.auth.handler.UserHandler;
+import com.makhadoni.customer.service.modules.auth.service.UserServiceImpl;
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.modules.customer.handler.CustomerHandler;
 import com.makhadoni.customer.service.modules.customer.service.CustomerService;
@@ -101,6 +104,16 @@ public class CustomerRouter {
                                     parameters = {
                                         @Parameter(in = ParameterIn.PATH, name = "customerId")}
                     )),
+                    @RouterOperation(path = "/api/customer/{customerId}", produces = {
+                            MediaType.APPLICATION_JSON_VALUE},
+                            method = RequestMethod.PUT, beanClass = CustomerService.class, beanMethod = "deleteCustomer",
+                            operation = @Operation(operationId = "deleteCustomer11",
+                                    responses = {
+                                            @ApiResponse(responseCode = "204", description = "successful operation", content = @Content(mediaType = "Boolean")),
+                                            @ApiResponse(responseCode = "400", description = "Bad parameter input"),},
+                                    parameters = {
+                                            @Parameter(in = ParameterIn.PATH, name = "customerId")}
+                            )),
             })
     public RouterFunction<ServerResponse> customerRoute(CustomerHandler handler) {
         return
@@ -109,7 +122,8 @@ public class CustomerRouter {
                                 .andRoute(GET("/{customerId}"), handler::getCustomer)
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)),handler::createCustomer)
                                 .andRoute(PATCH("").and(accept(MediaType.APPLICATION_JSON)),handler::updateCustomer)
-                                .andRoute(DELETE("/{customerId}"), handler::deleteCustomer));
+                                .andRoute(DELETE("/{customerId}"), handler::deleteCustomer))
+                        .andRoute(PUT("/{customerId}"), handler::deleteCustomer);
     }
 }
 

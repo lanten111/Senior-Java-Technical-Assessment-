@@ -2,13 +2,10 @@ package com.makhadoni.customer.service.modules.auth.router;
 
 import com.makhadoni.customer.service.modules.auth.dto.UserDto;
 import com.makhadoni.customer.service.modules.auth.service.UserServiceImpl;
-import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
-import com.makhadoni.customer.service.modules.customer.service.CustomerService;
 import com.makhadoni.customer.service.modules.auth.handler.UserHandler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,22 +28,10 @@ public class UserRouter {
     @Bean
     @RouterOperations(
             {
-                    @RouterOperation(path = "/api/auth/login", produces = {
-                            MediaType.APPLICATION_JSON_VALUE},
-                            method = RequestMethod.POST, beanClass = UserServiceImpl.class,
-                            operation = @Operation(operationId = "login",
-                                    responses = {
-                                            @ApiResponse(responseCode = "200", description = "successful operation",
-                                                    content =
-                                                    @Content(
-                                                            schema =
-                                                            @Schema(implementation = String.class))),
-                                            @ApiResponse(responseCode = "401", description = UserHandler.UNOTHORIXED_MESSAGE),},
-                                    requestBody =
-                                    @RequestBody(content = @Content(schema = @Schema(implementation = UserDto.class))))),
                     @RouterOperation(path = "/api/auth/signup", produces = {
-                            MediaType.APPLICATION_JSON_VALUE},
-                            method = RequestMethod.PUT, beanClass = UserServiceImpl.class,
+                            MediaType.APPLICATION_JSON_VALUE
+                    },
+                            method = RequestMethod.PUT, beanClass = UserServiceImpl.class, beanMethod = "createUser",
                             operation = @Operation(operationId = "signup",
                                     responses = {
                                             @ApiResponse(responseCode = "200", description = "User with username {username} has successfully been created",
@@ -56,12 +41,26 @@ public class UserRouter {
                                                             @Schema(implementation = String.class))),
                                             @ApiResponse(responseCode = "409", description = "User with username: {username} already exists"),},
                                     requestBody =
-                                    @RequestBody(content = @Content(schema = @Schema(implementation = UserDto.class)))))
+                                    @RequestBody(content = @Content(schema = @Schema(implementation = UserDto.class))))),
+                    @RouterOperation(path = "/api/auth/login", produces = {
+                            MediaType.APPLICATION_JSON_VALUE},
+                            method = RequestMethod.POST, beanClass = UserServiceImpl.class, beanMethod = "getUser",
+                            operation = @Operation(operationId = "login",
+                                    responses = {
+                                            @ApiResponse(responseCode = "200", description = "successful operation",
+                                                    content =
+                                                    @Content(
+                                                            schema =
+                                                            @Schema(implementation = UserDto.class))),
+                                            @ApiResponse(responseCode = "401", description = UserHandler.UNAUTHORISED_MESSAGE),},
+                                    requestBody =
+                                    @RequestBody(content = @Content(schema = @Schema(implementation = UserDto.class)))
+                            )),
             })
     public RouterFunction<ServerResponse> userRoute(UserHandler handler) {
         return
                 RouterFunctions.nest(path("/api/auth"),
-                        route(POST("/login"),handler::signIn)
-                        .andRoute(PUT("/signup"), handler::createUser));
+                        route(POST("/login").and(accept(MediaType.APPLICATION_JSON)),handler::signIn)
+                        .andRoute(PUT("/signup").and(accept(MediaType.APPLICATION_JSON)), handler::createUser));
     }
 }

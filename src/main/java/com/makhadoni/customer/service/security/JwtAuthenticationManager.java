@@ -1,5 +1,6 @@
 package com.makhadoni.customer.service.security;
 
+import com.makhadoni.customer.service.exception.AuthenticationException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,9 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String authToken = authentication.getCredentials().toString();
+        if (authToken.equals("null")){
+            return Mono.error(new AuthenticationException("Invalid or Missing token provided, please try again"));
+        }
         return tokenService.valid(authToken)
             .filter(valid -> valid)
                 .switchIfEmpty(Mono.empty())

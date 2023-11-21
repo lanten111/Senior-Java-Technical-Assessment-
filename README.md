@@ -47,7 +47,7 @@ Ensure you have Docker and Docker Compose installed on your machine.
 First thing when deploying the app will be to build the app using the command below
 
 ```bash
-sudo docker build -t customer-service-api-image:latest .
+docker build -t customer-service-api-image:latest .
 ````
 
 Intellij might allow you to run it directly from here, if you see double play button on the left just press it,
@@ -64,7 +64,7 @@ when it's done then you can access the api via swagger or use postman collection
 
 
 ```bash
-sudo docker-compose -f .docker/docker-compose.yml up -d
+docker-compose -f .docker/docker-compose.yml up -d
 ```
 
 To build the Docker image for this project, run the following command in your terminal:

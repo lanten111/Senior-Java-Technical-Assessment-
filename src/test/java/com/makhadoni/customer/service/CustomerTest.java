@@ -1,6 +1,6 @@
 package com.makhadoni.customer.service;
 
-import com.makhadoni.customer.service.cache.CacheService;
+import com.makhadoni.customer.service.cache.CustomerCacheService;
 import com.makhadoni.customer.service.modules.customer.domain.Customer;
 import com.makhadoni.customer.service.modules.customer.dto.CustomerDto;
 import com.makhadoni.customer.service.exception.NotFoundException;
@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -24,7 +25,7 @@ public class CustomerTest  {
     CustomerRepository customerRepository;
 
     @Mock
-    CacheService cacheService;
+    CustomerCacheService customerCacheService;
 
     @InjectMocks
     CustomerServiceImpl customerService;
@@ -36,14 +37,15 @@ public class CustomerTest  {
     @BeforeEach
     public void setup(){
         MockitoAnnotations.initMocks(this);
+        ReflectionTestUtils.setField(customerService, "customerCacheTimeout", "5");
     }
 
     @Test
     public void canSuccessfullyGetCustomers(){
 
-        Mockito.when(cacheService.getList(Mockito.anyString())).thenReturn(Flux.empty());
+        Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.empty());
         Mockito.when(customerRepository.findAllByFirstNameContainingIgnoreCaseOrderById(anyString(), any())).thenReturn(Flux.just(customer));
-        Mockito.when(cacheService.setList(Mockito.anyString(), Mockito.anyList(), any())).thenReturn(Flux.just(1).count());
+        Mockito.when(customerCacheService.setList(Mockito.anyString(), Mockito.anyList(), any())).thenReturn(Flux.just(1).count());
 
 
         StepVerifier.create(customerService.getCustomers(1, 1, ""))
@@ -60,7 +62,7 @@ public class CustomerTest  {
     @Test
     public void canSuccessfullyGetCustomersFromCache(){
 
-        Mockito.when(cacheService.getList(Mockito.anyString())).thenReturn(Flux.just(customerDto));
+        Mockito.when(customerCacheService.getList(Mockito.anyString())).thenReturn(Flux.just(customerDto));
 
         StepVerifier.create(customerService.getCustomers(1, 1, ""))
                 .expectNextMatches(customerDto ->
@@ -90,9 +92,9 @@ public class CustomerTest  {
     @Test
     public void canSuccessfullyGetCustomer(){
 
-        Mockito.when(cacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
+        Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
         Mockito.when(customerRepository.findById(anyInt())).thenReturn(Mono.just(customer));
-        Mockito.when(cacheService.setValue(Mockito.anyString(), Mockito.any(CustomerDto.class), any())).thenReturn(Mono.just(true));
+        Mockito.when(customerCacheService.setValue(any(), any(), any())).thenReturn(Mono.just(true));
 
 
         StepVerifier.create(customerService.getCustomer("1"))
@@ -108,7 +110,8 @@ public class CustomerTest  {
     @Test
     public void canSuccessfullyGetCustomerFromCache(){
 
-        Mockito.when(cacheService.getValue(Mockito.anyString())).thenReturn(Mono.just(customerDto));
+
+        Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.just(customerDto));
 
         StepVerifier.create(customerService.getCustomer("1"))
                 .expectNextMatches(customerDto ->
@@ -123,7 +126,7 @@ public class CustomerTest  {
     @Test
     public void canThrowNotFoundException(){
 
-        Mockito.when(cacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
+        Mockito.when(customerCacheService.getValue(Mockito.anyString())).thenReturn(Mono.empty());
         Mockito.when(customerRepository.findById(anyInt())).thenReturn(Mono.empty());
 
         StepVerifier.create(customerService.getCustomer("1"))

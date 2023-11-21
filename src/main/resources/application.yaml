@@ -2,15 +2,16 @@ server:
   port: 8080
 springdoc:
   show-actuator: true
+  version: '@springdoc.version@'
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui/index.html
   api-docs:
-    swagger-ui:
-      enabled: true
-      path: /swagger-ui.html
-    groups:
-      enabled: true
     enabled: true
     path: /swagger-doc/v3/api-docs
-
+  cache:
+    disabled: true
+  show-login-endpoint: true
 spring:
   security:
     token:
@@ -30,6 +31,11 @@ spring:
     redis:
       host: localhost
       port: 6379
+    timeouts:
+      customer-list: 5
+      customer: 6
+      user: 3
+
 logging:
   level:
-    root: DEBUG
+    root: debug

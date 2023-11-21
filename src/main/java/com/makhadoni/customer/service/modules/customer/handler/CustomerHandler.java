@@ -13,7 +13,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import javax.security.sasl.AuthenticationException;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -37,10 +36,10 @@ public class CustomerHandler {
                 .flatMap(this::validateCustomerObject)
                 .flatMap(customerService::createCustomer)
                 .flatMap(savedCustomer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(savedCustomer)))
-                .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
-                .onErrorResume(AlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)
-                .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
-                .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
+                .onErrorResume(ConstraintViolationException.class, GlobalExceptionHandler::handleConstraintViolation)
+                .onErrorResume(AlreadyExistsException.class, GlobalExceptionHandler::handleAlreadyExistsException)
+                .onErrorResume(IllegalArgumentException.class, GlobalExceptionHandler::handleInvalidArgumentException)
+                .onErrorResume(Exception.class, GlobalExceptionHandler::handleGenericException);
     }
 
     public Mono<ServerResponse> updateCustomer(ServerRequest request){
@@ -48,19 +47,19 @@ public class CustomerHandler {
                 .flatMap(this::validateCustomerObject)
                 .flatMap(customerService::updateCustomer)
                 .flatMap(savedCustomer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(savedCustomer)))
-                .onErrorResume(ConstraintViolationException.class, GlobalErrorHandler::handleConstraintViolation)
-                .onErrorResume(AlreadyExistsException.class, GlobalErrorHandler::handleAlreadyExistsException)
-                .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
-                .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
+                .onErrorResume(ConstraintViolationException.class, GlobalExceptionHandler::handleConstraintViolation)
+                .onErrorResume(AlreadyExistsException.class, GlobalExceptionHandler::handleAlreadyExistsException)
+                .onErrorResume(IllegalArgumentException.class, GlobalExceptionHandler::handleInvalidArgumentException)
+                .onErrorResume(Exception.class, GlobalExceptionHandler::handleGenericException);
     }
 
     public Mono<ServerResponse> getCustomer(ServerRequest request){
         return ParameterValidator.getAndValidatePathParam(request, CUSTOMER_ID)
                 .flatMap( id -> customerService.getCustomer(request.pathVariable(CUSTOMER_ID))
                         .flatMap(customer -> ServerResponse.ok().contentType(APPLICATION_JSON).body(BodyInserters.fromValue(customer))))
-                .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
-                .onErrorResume(NotFoundException.class, GlobalErrorHandler::handleNotFoundException)
-                .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
+                .onErrorResume(IllegalArgumentException.class, GlobalExceptionHandler::handleInvalidArgumentException)
+                .onErrorResume(NotFoundException.class, GlobalExceptionHandler::handleNotFoundException)
+                .onErrorResume(Exception.class, GlobalExceptionHandler::handleGenericException);
     }
 
     public Mono<ServerResponse> getCustomers(ServerRequest request){
@@ -69,18 +68,18 @@ public class CustomerHandler {
                         .flatMap(size -> customerService.getCustomers(page, size, request.queryParam("firstName").orElse(""))
                 .collectList()
                 .flatMap(customers -> ServerResponse.ok().contentType(APPLICATION_JSON).body(Mono.just(customers), List.class))))
-                .onErrorResume(NotFoundException.class, GlobalErrorHandler::handleNotFoundException)
-                .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
-                .onErrorResume(AuthenticationException.class, GlobalErrorHandler::handleAuthenticationException)
-                .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
+                .onErrorResume(NotFoundException.class, GlobalExceptionHandler::handleNotFoundException)
+                .onErrorResume(IllegalArgumentException.class, GlobalExceptionHandler::handleInvalidArgumentException)
+                .onErrorResume(AuthenticationException.class, GlobalExceptionHandler::handleAuthenticationException)
+                .onErrorResume(Exception.class, GlobalExceptionHandler::handleGenericException);
     }
 
     public Mono<ServerResponse> deleteCustomer(ServerRequest request){
         return ParameterValidator.getAndValidatePathParam(request, CUSTOMER_ID)
                 .flatMap(id -> customerService.deleteCustomer(id)
                         .then(ServerResponse.noContent().build()))
-                .onErrorResume(IllegalArgumentException.class, GlobalErrorHandler::handleInvalidArgumentException)
-                .onErrorResume(Exception.class, GlobalErrorHandler::handleGenericException);
+                .onErrorResume(IllegalArgumentException.class, GlobalExceptionHandler::handleInvalidArgumentException)
+                .onErrorResume(Exception.class, GlobalExceptionHandler::handleGenericException);
 
     }
 

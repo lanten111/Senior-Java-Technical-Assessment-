@@ -2,6 +2,7 @@ package com.makhadoni.customer.service.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -30,7 +31,8 @@ public class WebSecurityConfig {
                 .securityContextRepository(contextRepository)
                 .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(authorizeExchangeSpec ->  authorizeExchangeSpec
-                        .pathMatchers("api/auth/login", "api/auth/signup", "/swagger-ui/index.html", "/swagger-doc/v3/api-docs").permitAll()
+                        .pathMatchers("/api/auth/*","/swagger-ui/**").permitAll()
+                        .pathMatchers( "/swagger-doc/**").permitAll()
                         .anyExchange()
                         .authenticated())
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)

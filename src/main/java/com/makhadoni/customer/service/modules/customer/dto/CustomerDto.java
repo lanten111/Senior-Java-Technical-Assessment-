@@ -1,6 +1,8 @@
 package com.makhadoni.customer.service.modules.customer.dto;
 
-public class CustomerDto {
+import java.io.Serializable;
+
+public class CustomerDto implements Serializable {
 
     private Integer id;
     private String firstName;
