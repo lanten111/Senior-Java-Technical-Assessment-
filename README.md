@@ -70,7 +70,7 @@ docker-compose -f .docker/docker-compose.yml up -d
 ### swagger
 Once all service are up and running you can access swagger on the following endpoint
 
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8071/swagger-ui/index.html
 
 First thing would to register using any username or password.. or keep the pre-populated detaols
 
